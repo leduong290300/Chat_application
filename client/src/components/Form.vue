@@ -12,13 +12,13 @@
             <router-view></router-view>
             <div class="d-grid mb-2">
               <b-button size="sm" class="btn-google btn-login">
-                <b-icon icon="google"></b-icon> Sign up with Google</b-button
+                <b-icon icon="google"></b-icon> Đăng nhập với Google</b-button
               >
             </div>
 
             <div class="d-grid">
               <b-button size="sm" class="btn-facebook btn-login">
-                <b-icon icon="facebook"></b-icon> Sign up with
+                <b-icon icon="facebook"></b-icon> Đăng nhập với
                 Facebook</b-button
               >
             </div>
@@ -30,8 +30,15 @@
 </template>
 
 <script>
+// import {
+//   authentication,
+//   FacebookAuthProvider,
+//   signInWithPopup,
+// } from "../../firebase/config";
+// const provider = new FacebookAuthProvider();
 export default {
   name: "Form",
+  methods: {},
 };
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h5 class="card-title text-center mb-5 fw-light fs-5">Login</h5>
+    <h5 class="card-title text-center mb-5 fw-light fs-5">Đăng nhập</h5>
     <form>
       <div class="form-floating mb-3">
         <input
@@ -11,7 +11,7 @@
           required
           autofocus
         />
-        <label for="floatingInputUsername">Username</label>
+        <label for="floatingInputUsername">Tên đăng nhập</label>
       </div>
 
       <hr />
@@ -23,16 +23,16 @@
           id="floatingPassword"
           placeholder="Password"
         />
-        <label for="floatingPassword">Password</label>
+        <label for="floatingPassword">Mật khẩu</label>
       </div>
 
       <div class="d-grid mb-2">
-        <b-button variant="outline-primary" size="lg"> Login</b-button>
+        <b-button variant="outline-primary" size="lg"> Đăng nhập</b-button>
       </div>
       <div class="register-link">
-        Don't have an account?
+        Bạn chưa có tài khoản?
         <router-link class="d-block text-center small" to="/register"
-          >Register Here</router-link
+          >Đăng kí tại đây</router-link
         >
       </div>
       <hr class="my-4" />
