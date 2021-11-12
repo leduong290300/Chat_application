@@ -1,7 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyBta5woPFxIVcHqiWxdEAqR_9-OIe_Fa-M",
   authDomain: "chat-app-d17db.firebaseapp.com",
@@ -17,4 +21,9 @@ const app = initializeApp(firebaseConfig);
 getAnalytics(app);
 const db = getFirestore();
 const authentication = getAuth();
-export { db, authentication, createUserWithEmailAndPassword };
+export {
+  db,
+  authentication,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+};
