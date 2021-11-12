@@ -72,8 +72,8 @@ export default {
           this.forms.email,
           this.forms.password,
         )
-          .then((UserCredentialImpl) => {
-            const user = UserCredentialImpl.user;
+          .then((userCredential) => {
+            const user = userCredential.user;
 
             if (user) {
               this.$store.dispatch("setUser", user);
