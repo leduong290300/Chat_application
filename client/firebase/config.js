@@ -1,10 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { getDatabase, ref, set } from "firebase/database";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyBta5woPFxIVcHqiWxdEAqR_9-OIe_Fa-M",
@@ -14,16 +15,21 @@ const firebaseConfig = {
   messagingSenderId: "364063539963",
   appId: "1:364063539963:web:604127ec2a1f800d3da65e",
   measurementId: "G-D8FT32E6RW",
+  databaseURL:
+    "https://chat-app-d17db-default-rtdb.asia-southeast1.firebasedatabase.app/",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 getAnalytics(app);
-const db = getFirestore();
+const database = getDatabase(app);
 const authentication = getAuth();
 export {
-  db,
   authentication,
+  updateProfile,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  database,
+  ref,
+  set,
 };

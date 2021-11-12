@@ -78,9 +78,11 @@
 import {
   createUserWithEmailAndPassword,
   authentication,
-  db,
+  database,
+  updateProfile,
+  ref,
+  set,
 } from "../../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
 
 import md5 from "md5";
 export default {
@@ -105,6 +107,7 @@ export default {
   methods: {
     registerAccount() {
       this.errors = [];
+
       if (this.isFormValid()) {
         createUserWithEmailAndPassword(
           authentication,
@@ -113,27 +116,24 @@ export default {
         )
           .then((UserCredentialImpl) => {
             const user = UserCredentialImpl.user;
-            user.displayName = this.forms.username;
-            user.photoURL =
-              "http://www.gravatar.com/avatar/" +
-              md5(user.email) +
-              "?d=identicon";
-            try {
-              const docRef = addDoc(collection(db, "users"), {
-                uid: user.uid,
-                name: user.displayName,
+            updateProfile(user, {
+              displayName: this.forms.username,
+              photoURL:
+                "http://www.gravatar.com/avatar/" +
+                md5(user.email) +
+                "?d=identicon",
+            }).then(() => {
+              set(ref(database, "users/" + user.uid), {
+                displayName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
               });
               this.$store.dispatch("setUser", user);
               this.$router.push({ name: "Home" });
-              console.log("Document written with ID: ", docRef);
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            }
+            });
           })
           .catch((error) => {
-            if (error.code) {
+            if (error.code === "auth/email-already-in-use") {
               this.errors.push(
                 "Email đã được sử dụng.Vui lòng chọn email khác!",
               );
@@ -161,7 +161,12 @@ export default {
       ) {
         return false;
       }
-      if (this.forms.password !== this.forms.password_confirmation) {
+
+      return true;
+    },
+    // Kiểm tra mật khẩu nhập lại
+    passwordConfirm() {
+      if (this.forms.password_confirmation !== this.forms.password) {
         return false;
       }
       return true;
@@ -183,7 +188,11 @@ export default {
         return false;
       }
       if (!this.passwordValid()) {
-        this.errors.push("Mật khẩu không hợp lệ ");
+        this.errors.push("Mật khẩu không được ít hơn 6 kí tự ");
+        return false;
+      }
+      if (!this.passwordConfirm()) {
+        this.errors.push("Mật khầu nhập lại không đúng");
         return false;
       }
       if (this.validateEmail()) {
