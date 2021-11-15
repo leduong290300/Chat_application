@@ -75,10 +75,8 @@ export default {
           .then((userCredential) => {
             const user = userCredential.user;
 
-            if (user) {
-              this.$store.dispatch("setUser", user);
-              this.$router.push({ name: "Home" });
-            }
+            this.$store.dispatch("setUser", user);
+            this.$router.push({ name: "Home" });
           })
           .catch((error) => {
             if (error.code === "auth/user-not-found") {

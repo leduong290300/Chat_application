@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-
 Vue.use(VueRouter);
+import { authentication } from "../../firebase/config";
 import FormLogin from "../views/FormLogin.vue";
 import FormRegister from "../views/FormRegister.vue";
 import Form from "../components/Form.vue";
@@ -27,6 +27,13 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+    beforeEnter: (to, from, next) => {
+      if (!authentication.currentUser) {
+        next("/login");
+      } else {
+        next();
+      }
+    },
   },
 ];
 const router = new VueRouter({
@@ -34,5 +41,4 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
-
 export default router;
