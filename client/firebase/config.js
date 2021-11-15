@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  signOut,
 } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyBta5woPFxIVcHqiWxdEAqR_9-OIe_Fa-M",
@@ -32,4 +33,5 @@ export {
   database,
   ref,
   set,
+  signOut,
 };

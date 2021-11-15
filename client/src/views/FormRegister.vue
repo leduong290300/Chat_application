@@ -129,7 +129,7 @@ export default {
                 photoURL: user.photoURL,
               });
               this.$store.dispatch("setUser", user);
-              this.$router.push({ name: "Home" });
+              this.$router.push("/login");
             });
           })
           .catch((error) => {
