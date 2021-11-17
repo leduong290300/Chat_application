@@ -24,7 +24,7 @@ export default {
 }
 #home_col_sidebar,
 #home_col_windowchat {
-  height: 100%;
+  height: auto;
 }
 #home_container,
 #home_col_sidebar,
