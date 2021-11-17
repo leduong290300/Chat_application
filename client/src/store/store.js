@@ -10,14 +10,21 @@ const store = new Vuex.Store({
     SET_USER(state, user) {
       state.currentUser = user;
     },
+    SET_CHAT_ROOM(state, room) {
+      state.currentChatRoom = room;
+    },
   },
   actions: {
     setUser({ commit }, user) {
       commit("SET_USER", user);
     },
+    setRoom({ commit }, room) {
+      commit("SET_CHAT_ROOM", room);
+    },
   },
   getters: {
     currentUser: (state) => state.currentUser,
+    currentChatRoom: (state) => state.currentChatRoom,
   },
 });
 export default store;
