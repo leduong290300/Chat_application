@@ -62,8 +62,8 @@
         visible
         id="collapse-a"
         class="mt-2 room-list"
-        v-for="(room, id) in rooms"
-        :key="id"
+        v-for="(room, key, index) in rooms"
+        :key="index"
       >
         <b-card class="room-content" v-on:click="changeRoom(room)">{{
           room.name
@@ -103,7 +103,7 @@
         <b-form-group label="Tên nhóm">
           <b-form-input
             id="name-input"
-            v-model="groupName"
+            v-model="roomName"
             required
           ></b-form-input>
         </b-form-group>
@@ -112,29 +112,23 @@
   </div>
 </template>
 <script>
-import {
-  signOut,
-  authentication,
-  set,
-  ref,
-  database,
-} from "../../firebase/config";
-import { v4 as uuidv4 } from "uuid";
+import { signOut, authentication, ref, database } from "../../firebase/config";
+
 import { mapGetters } from "vuex";
-import { onValue } from "@firebase/database";
+import { onChildAdded, child, push, update } from "@firebase/database";
 export default {
   name: "SideBar",
   data() {
     return {
       rooms: [],
-      groupName: "",
+      roomName: "",
     };
   },
   computed: {
     ...mapGetters(["currentUser"]),
     // Đếm số nhóm trong db đã tạo
     countRooms() {
-      return Object.keys(this.rooms).length;
+      return this.rooms.length;
     },
   },
   mounted() {
@@ -143,9 +137,8 @@ export default {
   methods: {
     addListener() {
       let dataCurrent = ref(database, "rooms");
-      onValue(dataCurrent, (snapshot) => {
-        const data = snapshot.val();
-        this.rooms = data;
+      onChildAdded(dataCurrent, (snapshot) => {
+        this.rooms.push(snapshot.val());
       });
     },
     // Thay đổi phỏng chat
@@ -163,18 +156,17 @@ export default {
     },
     // Tạo group chat mới
     createGroupChat() {
-      set(ref(database, "rooms/" + uuidv4()), {
-        name: this.groupName,
-      })
-        .then(() => {})
-        .catch((error) => {
-          console.log(error);
-        });
+      const newPostKey = push(child(ref(database), "rooms")).key;
+      const newRooms = { id: newPostKey, name: this.roomName };
+      const updates = {};
+      updates["rooms/" + newPostKey] = newRooms;
 
       this.$nextTick(() => {
         this.$bvModal.hide("modal-prevent-closing");
       });
+      return update(ref(database), updates);
     },
+    // Đăng xuất tài khoản
     logOutAccount() {
       signOut(authentication)
         .then(() => {
