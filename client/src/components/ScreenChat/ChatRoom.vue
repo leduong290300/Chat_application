@@ -1,7 +1,7 @@
 <template>
   <b-row id="header">
     <b-col sm="6" xs="6" class="header-avatar">
-      <span class="name-meta">NodeJS</span>
+      <span class="name-meta">{{ this.currentChatRoom.name }}</span>
     </b-col>
 
     <b-col sm="6" xs="6" class="header-option">
@@ -21,8 +21,13 @@
   </b-row>
 </template>
 <script>
+// Other
+import { mapGetters } from "vuex";
 export default {
   name: "ChatRoom",
+  computed: {
+    ...mapGetters(["currentChatRoom"]),
+  },
 };
 </script>
 <style scoped>

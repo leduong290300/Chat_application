@@ -1,43 +1,39 @@
 <template>
   <b-row id="message">
-    <b-row class="message-body">
+    <b-row
+      class="message-body"
+      v-for="(message, index) in storeMessage"
+      :key="index"
+    >
       <b-col md="1" lg="1" xl="1" class="avatar">
-        <b-avatar size="3rem" variant="info"></b-avatar>
+        <b-avatar
+          size="2rem"
+          variant="info"
+          :src="message.user.photoURL"
+        ></b-avatar>
       </b-col>
       <b-col md="11" lg="11" xl="11" class="message">
         <div class="main">
-          <div class="message-text">Hi,Hello Cac Ban</div>
-          <div class="message-time">12:21AM 14/11/2021</div>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row class="message-body">
-      <b-col md="1" lg="1" xl="1" class="avatar">
-        <b-avatar size="3rem" variant="info"></b-avatar>
-      </b-col>
-      <b-col md="11" lg="11" xl="11" class="message">
-        <div class="main">
-          <div class="message-text">Hi,Hello Cac Ban</div>
-          <div class="message-time">12:21AM 14/11/2021</div>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row class="message-body">
-      <b-col md="1" lg="1" xl="1" class="avatar">
-        <b-avatar size="3rem" variant="info"></b-avatar>
-      </b-col>
-      <b-col md="11" lg="11" xl="11" class="message">
-        <div class="main">
-          <div class="message-text">Hi,Hello Cac Ban</div>
-          <div class="message-time">12:21AM 14/11/2021</div>
+          <div class="message-text">{{ message.content }}</div>
+          <div class="message-time">{{ message.time | timeNow() }}</div>
         </div>
       </b-col>
     </b-row>
   </b-row>
 </template>
 <script>
+import moment from "moment";
 export default {
   name: "Message",
+  props: {
+    storeMessage: Array,
+  },
+  // Xắp sếp thời gian tin nhắn
+  filters: {
+    timeNow(value) {
+      return moment(value).fromNow();
+    },
+  },
 };
 </script>
 <style scoped>
@@ -57,9 +53,10 @@ export default {
 }
 #message .avatar {
   width: auto;
+  margin-right: 10px !important;
 }
 #message .message-body {
-  margin-bottom: 10px !important;
+  margin-bottom: 15px !important;
 }
 #message .message {
   max-width: 60%;
