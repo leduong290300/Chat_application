@@ -84,7 +84,7 @@ import {
   set,
 } from "../../firebase/config";
 
-import md5 from "md5";
+// import md5 from "md5";
 export default {
   name: "FormRegister",
   data() {
@@ -119,9 +119,9 @@ export default {
             updateProfile(user, {
               displayName: this.forms.username,
               photoURL:
-                "http://www.gravatar.com/avatar/" +
-                md5(user.email) +
-                "?d=identicon",
+                "https://ui-avatars.com/api/?name=" +
+                this.forms.username +
+                "?size=80",
             }).then(() => {
               set(ref(database, "users/" + user.uid), {
                 displayName: user.displayName,
