@@ -8,15 +8,22 @@
       ></b-icon>
     </b-col>
     <b-col sm="9" xs="9" class="reply-main">
-      <textarea rows="1" v-model.trim="message" class="form-control"></textarea>
+      <textarea
+        rows="1"
+        v-model.trim="message"
+        v-on:keyup.enter="sendMessage"
+        class="form-control"
+      ></textarea>
     </b-col>
-    <b-col sm="1" xs="1" class="reply-recording">
-      <b-icon icon="mic-fill" class="icon icon-mic"></b-icon>
+    <b-col sm="1" xs="1" class="reply-file">
+      <b-icon icon="folder-symlink-fill" class="icon icon-file"></b-icon>
     </b-col>
     <b-col sm="1" xs="1" class="reply-send">
-      <b-button v-on:click="sendMessage" variant="outline-primary"
-        >Gửi</b-button
-      >
+      <b-icon
+        icon="chat-square-dots"
+        v-on:click="sendMessage"
+        class="icon icon-send"
+      ></b-icon>
     </b-col>
     <VEmojiPicker
       class="emoji-picker"
@@ -61,6 +68,7 @@ export default {
           },
         });
       }
+      this.isShow = false;
       this.message = "";
     },
     // Thêm icon
@@ -85,7 +93,7 @@ export default {
   height: 25px;
 }
 #reply .reply-enjoy,
-#reply .reply-recording,
+#reply .reply-file,
 #reply .reply-send {
   padding: 5px !important;
   text-align: center;
@@ -106,7 +114,8 @@ export default {
   font-size: 16px;
 }
 #reply .reply-enjoy .icon-smile:hover,
-#reply .reply-recording .icon-mic:hover {
+#reply .reply-file .icon-file:hover,
+#reply .reply-send .icon-send:hover {
   cursor: pointer;
 }
 #reply .emoji-picker {

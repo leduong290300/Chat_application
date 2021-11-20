@@ -1,12 +1,13 @@
 .DS_Store
 node_modules
 /dist
-
+/vue.config.js
 
 # local env files
 .env.local
 .env.*.local
-
+.cert
+.gitignore
 # Log files
 npm-debug.log*
 yarn-debug.log*
@@ -14,6 +15,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Editor directories and files
+
 .idea
 .vscode
 *.suo
