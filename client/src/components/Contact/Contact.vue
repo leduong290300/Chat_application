@@ -1,26 +1,81 @@
 <template>
   <b-row id="contact">
     <span class="title" v-b-toggle.collapse-b
-      >Danh sách liên hệ
+      >Danh sách liên hệ ({{ countUser }})
       <b-icon class="icon-arrow" icon="arrow-right-circle"></b-icon
     ></span>
-    <b-collapse visible id="collapse-b" class="mt-2 contact-list">
-      <b-card class="contact-body">
+    <b-collapse
+      visible
+      id="collapse-b"
+      class="mt-2 contact-list"
+      v-for="(user, index) in users"
+      v-bind:key="index"
+    >
+      <b-card class="contact-body" v-on:click="changeUser(user)">
         <div class="avatar-icon">
-          <img
-            class="avatar-user"
-            src="https://bootdey.com/img/Content/avatar/avatar1.png"
-          />
+          <img class="avatar-user" :src="user.photoURL" />
         </div>
-        <div class="contact-name">Le Duong</div>
+        <div class="contact-name">{{ user.displayName }}</div>
         <b-badge variant="primary">+5</b-badge>
       </b-card>
     </b-collapse>
   </b-row>
 </template>
 <script>
+import { ref, database } from "../../../firebase/config";
+import { mapGetters } from "vuex";
+import { onChildAdded, off } from "@firebase/database";
 export default {
   name: "Contact",
+  data() {
+    return {
+      users: [],
+    };
+  },
+  computed: {
+    ...mapGetters(["currentUser"]),
+    countUser() {
+      return this.users.length;
+    },
+  },
+  mounted() {
+    this.addListener();
+  },
+  methods: {
+    // Load user
+    addListener() {
+      let dataCurrent = ref(database, "users");
+      onChildAdded(dataCurrent, (snapshot) => {
+        if (this.currentUser.uid !== snapshot.key) {
+          let data = snapshot.val();
+          data["uid"] = snapshot.key;
+          this.users.push(data);
+        }
+      });
+    },
+    // Change user
+    changeUser(user) {
+      const userId = this.getUserId(user.uid);
+      const channel = { id: userId, displayName: user.displayName };
+
+      this.$store.dispatch("setRoom", null);
+      this.$store.dispatch("setPrivate", true);
+      this.$store.dispatch("setChatUser", channel);
+    },
+    // Get user id
+    getUserId(userId) {
+      return userId < this.currentUser.uid
+        ? userId + "/" + this.currentUser.uid
+        : this.currentUser.uid + "/" + userId;
+    },
+    // Unsubscribe
+    unsubscribe() {
+      off(ref(database, "users"));
+    },
+  },
+  beforeDestroy() {
+    this.unsubscribe();
+  },
 };
 </script>
 <style scoped>

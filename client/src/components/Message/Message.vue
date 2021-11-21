@@ -42,8 +42,9 @@ export default {
   margin: 0 !important;
   border: 1px solid #f7f7f7;
   height: calc(100% - 160px);
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-end;
+  overflow-y: auto;
 }
 #message .message-body,
 #message .avatar,

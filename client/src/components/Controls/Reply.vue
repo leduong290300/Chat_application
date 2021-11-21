@@ -49,13 +49,19 @@ export default {
   },
   components: { VEmojiPicker },
   computed: {
-    ...mapGetters(["currentUser", "currentChatRoom"]),
+    ...mapGetters([
+      "currentUser",
+      "currentChatRoom",
+      "currentChatUser",
+      "isPrivate",
+    ]),
   },
 
   methods: {
     // Gửi tin nhắn
     sendMessage() {
-      const postRef = ref(database, `message/${this.currentChatRoom.id}`);
+      const postRef = this.getMessageRef();
+
       const newPostRef = push(postRef);
       if (this.message.length > 0) {
         set(newPostRef, {
@@ -70,6 +76,13 @@ export default {
       }
       this.isShow = false;
       this.message = "";
+    },
+    getMessageRef() {
+      if (this.isPrivate) {
+        return ref(database, `privateMessage/${this.currentChatUser.id}`);
+      } else {
+        return ref(database, `message/${this.currentChatRoom.id}`);
+      }
     },
     // Thêm icon
     selectEmoji(emoji) {

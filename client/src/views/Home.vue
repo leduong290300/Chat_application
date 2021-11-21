@@ -5,17 +5,33 @@
         <SideBar />
       </b-col>
       <b-col id="home_col_windowchat" md="8" lg="8" xl="9">
-        <WindowChat />
+        <div v-if="this.currentChatRoom">
+          <ChatRoom />
+        </div>
+        <div v-else-if="this.currentChatUser">
+          <ChatSingle />
+        </div>
+        <div v-else>
+          <Pending />
+        </div>
       </b-col>
     </b-row>
   </b-container>
 </template>
 <script>
 import SideBar from "../components/SideBar.vue";
-import WindowChat from "../components/WindowChat.vue";
+import ChatRoom from "../components/ScreenChat/ChatRoom.vue";
+import ChatSingle from "../components/ScreenChat/ChatSingle.vue";
+import Pending from "../components/ScreenChat/Pending.vue";
+// Other
+import { mapGetters } from "vuex";
+
 export default {
   name: "Home",
-  components: { SideBar, WindowChat },
+  components: { SideBar, ChatRoom, ChatSingle, Pending },
+  computed: {
+    ...mapGetters(["currentChatUser", "currentChatRoom"]),
+  },
 };
 </script>
 <style>

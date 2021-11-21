@@ -49,6 +49,7 @@ export default {
     // Thay đổi phỏng chat
     changeRoom(room) {
       this.$store.dispatch("setRoom", room);
+      this.$store.dispatch("setPrivate", false);
     },
   },
 };
