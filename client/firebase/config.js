@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getStorage } from "firebase/storage";
 import { getDatabase, ref, set } from "firebase/database";
 import {
   getAuth,
@@ -22,9 +23,13 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-getAnalytics(app);
+// Lưu trữ dữ liệu đám mây
 const database = getDatabase(app);
+// Xác thực người dùng
 const authentication = getAuth();
+// Lưu ảnh dám mây
+const storage = getStorage(app);
+getAnalytics(app);
 export {
   authentication,
   updateProfile,
@@ -34,4 +39,5 @@ export {
   ref,
   set,
   signOut,
+  storage,
 };
