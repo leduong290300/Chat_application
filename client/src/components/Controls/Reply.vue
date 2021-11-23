@@ -16,7 +16,11 @@
       ></textarea>
     </b-col>
     <b-col sm="1" xs="1" class="reply-file">
-      <b-icon icon="folder-symlink-fill" class="icon icon-file"></b-icon>
+      <b-icon
+        v-b-modal.modal-upload-file
+        icon="folder-symlink-fill"
+        class="icon icon-file"
+      ></b-icon>
     </b-col>
     <b-col sm="1" xs="1" class="reply-send">
       <b-icon
@@ -30,9 +34,12 @@
       v-show="isShow == true"
       @select="selectEmoji"
     />
+    <UploadFile />
   </b-row>
 </template>
 <script>
+// Component
+import UploadFile from "../Modal/UploadFile.vue";
 // Others
 import { database, set, ref } from "../../../firebase/config";
 import { push, serverTimestamp } from "@firebase/database";
@@ -47,7 +54,7 @@ export default {
       isShow: false,
     };
   },
-  components: { VEmojiPicker },
+  components: { VEmojiPicker, UploadFile },
   computed: {
     ...mapGetters([
       "currentUser",
@@ -130,6 +137,11 @@ export default {
 #reply .reply-file .icon-file:hover,
 #reply .reply-send .icon-send:hover {
   cursor: pointer;
+}
+#reply .reply-enjoy .icon-smile:focus,
+#reply .reply-file .icon-file:focus,
+#reply .reply-send .icon-send:focus {
+  outline: none;
 }
 #reply .emoji-picker {
   position: absolute;
