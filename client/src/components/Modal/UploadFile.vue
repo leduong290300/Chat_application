@@ -12,7 +12,7 @@
     </form>
     <b-progress
       class="mt-2"
-      :value="value"
+      :percent="percent"
       :max="max"
       show-progress
       animated
@@ -20,39 +20,48 @@
   </b-modal>
 </template>
 <script>
-import { ref, database, storage } from "../../../firebase/config";
+import mime from "mime-types";
+import { storage, set } from "../../../firebase/config";
 import {
-  ref as refStorage,
+  ref,
   uploadBytes,
   uploadBytesResumable,
+  getDownloadURL,
 } from "firebase/storage";
+import { push } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
-import mime from "mime-types";
 import { mapGetters } from "vuex";
 export default {
   name: "UploadFile",
   data() {
     return {
       file: null,
-      contentType: null,
-      value: 0,
       max: 100,
-      types: ["image/jpeg", "image/png"],
       uploadTask: null,
+      percent: 0,
+      types: ["image/jpeg", "image/png"],
     };
   },
   computed: {
-    ...mapGetters(["isPrivate", "currentChatUser", "currentChatRoom"]),
+    ...mapGetters([
+      "isPrivate",
+      "currentChatUser",
+      "currentChatRoom",
+      "currentUser",
+    ]),
   },
   methods: {
+    // Reset modal
     resetModal() {
       this.file = null;
       this.value = null;
     },
+
     handleOk(bvModalEvt) {
       bvModalEvt.preventDefault();
       this.handleUpload();
     },
+
     // Load file ảnh
     addFile(e) {
       const file = e.target.files;
@@ -61,44 +70,45 @@ export default {
       }
       if (this.file !== null) {
         if (this.isValid(this.file.name)) {
-          const data = { contentType: mime.lookup(this.file.name) };
-          this.contentType = data;
+          const contentType = { contentType: mime.lookup(this.file.name) };
+          this.handleUpload(this.file, contentType);
         }
       }
     },
+
     // Xác thực loại ảnh (png/jpeg)
     isValid(filename) {
       const index = this.types.indexOf(mime.lookup(filename));
       return index !== -1;
     },
+
     // Tải ảnh lên storage
-    handleUpload() {
-      if (this.file === null) return false;
-      if (this.isPrivate) {
-        const pathUploadUser = this.currentChatUser.id;
-        console.log(pathUploadUser);
-      } else {
-        const pathUploadRoom = this.currentChatRoom.id;
-        console.log(pathUploadRoom);
-      }
-      //   const ref = this.getMessageRef();
+    handleUpload(file, contentType) {
+      if (file === null) return false;
+
       const filePath = this.getPath() + "/" + uuidv4() + ".jpg";
-      const storageRef = refStorage(storage, filePath);
-      const uploadTask = uploadBytesResumable(storageRef, this.file);
+      const storageRef = ref(storage, filePath);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
       // Tải file ảnh lên
-      this.uploadTask = uploadBytes(storageRef, this.file, this.contentType);
+      this.uploadTask = uploadBytes(storageRef, file, contentType);
+
       // Quản lý tiến độ tải lên
       uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          this.value = progress;
+          this.percent = progress;
         },
         (error) => {
           console.log(error);
         },
         () => {
+          // Lấy đường dẫn ảnh sau khi lưu lên đám mây thành công
+          getDownloadURL(storageRef).then((url) => {
+            this.sendMessageFile(url);
+          });
           this.$nextTick(() => {
             this.$bvModal.hide("modal-upload-file");
           });
@@ -106,20 +116,19 @@ export default {
         },
       );
     },
+
+    //
+    sendMessageFile(url) {
+      const messageRef = this.$parent.getMessageRef();
+      const pathToUpload = push(messageRef);
+      set(pathToUpload, this.$parent.createMessage(url));
+    },
     // Lấy đường dẫn ảnh
     getPath() {
       if (this.isPrivate) {
-        return `chat_app/private/${this.currentChatUser.id}`;
+        return "chat_app/private/" + this.currentChatUser.id;
       } else {
         return "chat_app/public/";
-      }
-    },
-    // Lấy kho lưu trữ tin nhắn và phân loại
-    getMessageRef() {
-      if (this.isPrivate) {
-        return ref(database, `privateMessage/${this.currentChatUser.id}`);
-      } else {
-        return ref(database, `message/${this.currentChatRoom.id}`);
       }
     },
   },

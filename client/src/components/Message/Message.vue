@@ -14,7 +14,10 @@
       </b-col>
       <b-col md="11" lg="11" xl="11" class="message">
         <div class="main">
-          <div class="message-text">{{ message.content }}</div>
+          <div class="message-text" v-if="!isMessage(message)">
+            {{ message.content }}
+          </div>
+          <b-img thumbnail fluid :src="message.image" v-else></b-img>
           <div class="message-time">{{ message.time | timeNow() }}</div>
         </div>
       </b-col>
@@ -27,6 +30,11 @@ export default {
   name: "Message",
   props: {
     storeMessage: Array,
+  },
+  methods: {
+    isMessage(message) {
+      return message.content == null && message.image != null;
+    },
   },
   // Xắp sếp thời gian tin nhắn
   filters: {

@@ -43,6 +43,7 @@ import UploadFile from "../Modal/UploadFile.vue";
 // Others
 import { database, set, ref } from "../../../firebase/config";
 import { push, serverTimestamp } from "@firebase/database";
+
 import { VEmojiPicker } from "v-emoji-picker";
 import { mapGetters } from "vuex";
 export default {
@@ -65,32 +66,41 @@ export default {
   },
 
   methods: {
+    // Tạo tin nhắn`
+    createMessage(url = null) {
+      let value = {
+        time: serverTimestamp(),
+        user: {
+          displayName: this.currentUser.displayName,
+          photoURL: this.currentUser.photoURL,
+          id: this.currentUser.uid,
+        },
+      };
+      if (url == null) {
+        value["content"] = this.message;
+      } else {
+        value["image"] = url;
+      }
+      return value;
+    },
+
     // Gửi tin nhắn
     sendMessage() {
       const postRef = this.getMessageRef();
-
       const newPostRef = push(postRef);
-      if (this.message.length > 0) {
-        set(newPostRef, {
-          content: this.message,
-          time: serverTimestamp(),
-          user: {
-            displayName: this.currentUser.displayName,
-            photoURL: this.currentUser.photoURL,
-            id: this.currentUser.uid,
-          },
-        });
-      }
+      set(newPostRef, this.createMessage());
       this.isShow = false;
       this.message = "";
     },
+
     getMessageRef() {
       if (this.isPrivate) {
-        return ref(database, `privateMessage/${this.currentChatUser.id}`);
+        return ref(database, "privateMessage/" + this.currentChatUser.id);
       } else {
         return ref(database, `message/${this.currentChatRoom.id}`);
       }
     },
+
     // Thêm icon
     selectEmoji(emoji) {
       this.message += emoji.data;
