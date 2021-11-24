@@ -50,7 +50,7 @@ export default {
     loadMessage() {
       const messageRef = ref(
         database,
-        `privateMessage/${this.currentChatUser.id}`,
+        "privateMessage/" + this.currentChatUser.id,
       );
 
       onChildAdded(messageRef, (snapshot) => {
