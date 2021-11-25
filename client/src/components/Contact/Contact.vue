@@ -16,7 +16,11 @@
           <img class="avatar-user" :src="user.photoURL" />
         </div>
         <div class="contact-name">{{ user.displayName }}</div>
-        <b-badge variant="primary">+5</b-badge>
+        <b-badge
+          variant="primary"
+          v-if="getNotification(user) > 0 && user.uid !== currentUser.uid"
+          >{{ getNotification(user) }}</b-badge
+        >
       </b-card>
     </b-collapse>
   </b-row>
@@ -24,16 +28,17 @@
 <script>
 import { ref, database } from "../../../firebase/config";
 import { mapGetters } from "vuex";
-import { onChildAdded, off } from "@firebase/database";
+import { onChildAdded, off, onValue } from "@firebase/database";
 export default {
   name: "Contact",
   data() {
     return {
       users: [],
+      notificationCounts: [],
     };
   },
   computed: {
-    ...mapGetters(["currentUser"]),
+    ...mapGetters(["currentUser", "isPrivate"]),
     countUser() {
       return this.users.length;
     },
@@ -50,6 +55,8 @@ export default {
           let data = snapshot.val();
           data["uid"] = snapshot.key;
           this.users.push(data);
+          let userId = this.getUserId(snapshot.key);
+          this.countNotification(userId);
         }
       });
     },
@@ -67,6 +74,50 @@ export default {
       return userId < this.currentUser.uid
         ? userId + "/" + this.currentUser.uid
         : this.currentUser.uid + "/" + userId;
+    },
+
+    // Đếm thông báo
+    countNotification(userId) {
+      onValue(ref(database, `privateMessage/${userId}`), (snapshot) => {
+        this.handleCountNotification(userId, snapshot);
+      });
+    },
+
+    // Xử lí thông báo
+    handleCountNotification(userId, snapshot) {
+      let lastTotal = 0;
+      let index = this.notificationCounts.findIndex(
+        (data) => data.id === userId,
+      );
+
+      if (index !== -1) {
+        if (userId !== this.currentUser.id) {
+          lastTotal = this.notificationCounts[index].total;
+          if (snapshot.size - lastTotal > 0) {
+            this.notificationCounts[index].notification =
+              snapshot.size - lastTotal;
+          }
+        }
+        this.notificationCounts[index].peviousTotal = snapshot.size;
+      } else {
+        this.notificationCounts.push({
+          id: userId,
+          total: snapshot.size,
+          peviousTotal: snapshot.size,
+          notification: 0,
+        });
+      }
+    },
+
+    // Hiển thị số thông báo
+    getNotification(user) {
+      let notifi = 0;
+      this.notificationCounts.forEach((data) => {
+        if (data.id === this.getUserId(user.uid)) {
+          notifi = data.notification;
+        }
+      });
+      return notifi;
     },
     // Unsubscribe
     unsubscribe() {
