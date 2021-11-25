@@ -11,45 +11,101 @@
       v-for="(room, key, index) in rooms"
       :key="index"
     >
-      <b-card class="room-content" v-on:click="changeRoom(room)">{{
-        room.name
-      }}</b-card>
+      <b-card class="room-content" v-on:click="changeRoom(room)"
+        >{{ room.name }}
+        <b-badge
+          variant="primary"
+          v-if="getNotification(room) > 0 && room.id !== currentChatRoom.id"
+          >{{ getNotification(room) }}</b-badge
+        >
+      </b-card>
     </b-collapse>
   </b-row>
 </template>
 <script>
 import { ref, database } from "../../../firebase/config";
 import { mapGetters } from "vuex";
-import { onChildAdded } from "@firebase/database";
+import { onChildAdded, onValue } from "@firebase/database";
 export default {
   name: "Room",
   data() {
     return {
       rooms: [],
       roomName: "",
+      notificationCounts: [],
     };
   },
+
   computed: {
-    ...mapGetters(["currentUser", "currentChatRoom"]),
+    ...mapGetters(["currentUser", "currentChatRoom", "isPrivate"]),
     // Đếm số nhóm trong db đã tạo
     countRooms() {
       return this.rooms.length;
     },
   },
+
   mounted() {
     this.addListener();
   },
+
   methods: {
     addListener() {
       let dataCurrent = ref(database, "rooms");
       onChildAdded(dataCurrent, (snapshot) => {
         this.rooms.push(snapshot.val());
+        this.countNotification(snapshot.key);
       });
     },
+
     // Thay đổi phỏng chat
     changeRoom(room) {
       this.$store.dispatch("setRoom", room);
       this.$store.dispatch("setPrivate", false);
+    },
+
+    // Đếm thông báo
+    countNotification(roomId) {
+      onValue(ref(database, `message/${roomId}`), (snapshot) => {
+        this.handleCountNotification(roomId, snapshot);
+      });
+    },
+
+    // Xử lí thông báo
+    handleCountNotification(roomId, snapshot) {
+      let lastTotal = 0;
+      let index = this.notificationCounts.findIndex(
+        (data) => data.id === roomId,
+      );
+
+      if (index !== -1) {
+        if (roomId !== this.currentChatRoom.id) {
+          lastTotal = this.notificationCounts[index].total;
+          if (snapshot.size - lastTotal > 0) {
+            this.notificationCounts[index].notification =
+              snapshot.size - lastTotal;
+          }
+        }
+        this.notificationCounts[index].peviousTotal = snapshot.size;
+      } else {
+        this.notificationCounts.push({
+          id: roomId,
+          total: snapshot.size,
+          peviousTotal: snapshot.size,
+          notification: 0,
+        });
+      }
+    },
+
+    // Hiển thị số thông báo
+    getNotification(room) {
+      let notifi = 0;
+
+      this.notificationCounts.forEach((data) => {
+        if (data.id === room.id) {
+          notifi = data.notification;
+        }
+      });
+      return notifi;
     },
   },
 };
@@ -79,5 +135,10 @@ export default {
 #room .room-list {
   overflow-x: auto;
   height: 63px;
+}
+#room .badge {
+  background-color: #0d6efd;
+  position: absolute;
+  right: 0;
 }
 </style>
