@@ -96,7 +96,7 @@ export default {
       }
     },
 
-    // Hiển thị số thông báo
+    //TODO: Hiển thị số thông báo
     getNotification(room) {
       let notifi = 0;
 
