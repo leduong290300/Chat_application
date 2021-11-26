@@ -24,22 +24,9 @@
             icon="bookmark-plus"
             v-b-tooltip.hover
             title="Thêm nhóm chat"
-            v-b-modal.modal-prevent-closing
+            v-b-modal.modal-create-room
           ></b-icon>
-          <b-modal
-            id="modal-prevent-closing"
-            ref="modal"
-            title="Thêm nhóm chat"
-            @show="resetModal"
-            @hidden="resetModal"
-            @ok="handleCreateRoom"
-          >
-            <form ref="form" @submit.stop.prevent="createRoomChat">
-              <b-form-group label="Tên">
-                <b-form-input v-model="roomName" required></b-form-input>
-              </b-form-group>
-            </form>
-          </b-modal>
+          <CreateRoom />
         </b-col>
         <b-col sm="2" xs="2">
           <b-icon
@@ -55,46 +42,18 @@
   </b-row>
 </template>
 <script>
-import {
-  signOut,
-  authentication,
-  ref,
-  database,
-} from "../../../firebase/config";
-import { child, push, update } from "@firebase/database";
+// TODO:Import componenet
+import CreateRoom from "../Modal/CreateRoom.vue";
+import { signOut, authentication } from "../../../firebase/config";
 import { mapGetters } from "vuex";
 export default {
   name: "Account",
-  data() {
-    return {
-      roomName: "",
-    };
-  },
+
+  components: { CreateRoom },
   computed: {
-    ...mapGetters(["currentUser", "currentChatRoom"]),
+    ...mapGetters(["currentUser"]),
   },
   methods: {
-    // Reset modal sau khi tạo nhóm thành công
-    resetModal() {
-      this.roomName = "";
-    },
-    // Xử lí sự kiện thêm nhóm mới
-    handleCreateRoom(bvModalEvt) {
-      bvModalEvt.preventDefault();
-      this.createRoomChat();
-    },
-    // Tạo group chat mới
-    createRoomChat() {
-      const newPostKey = push(child(ref(database), "rooms")).key;
-      const newRooms = { id: newPostKey, name: this.roomName };
-      const updates = {};
-      updates["rooms/" + newPostKey] = newRooms;
-
-      this.$nextTick(() => {
-        this.$bvModal.hide("modal-prevent-closing");
-      });
-      return update(ref(database), updates);
-    },
     // Đăng xuất tài khoản
     logOutAccount() {
       signOut(authentication)
