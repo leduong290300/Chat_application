@@ -8,7 +8,7 @@
     @ok="handleCreateRoom"
   >
     <form ref="form" @submit.stop.prevent="createRoomChat">
-      <b-form-group label="Tên">
+      <b-form-group label="Tên phòng">
         <b-form-input v-model="name" required></b-form-input>
       </b-form-group>
       <b-form-group label="Mô tả" class="mt-2">
@@ -19,8 +19,10 @@
 </template>
 <script>
 // TODO:Others
-import { ref, database } from "../../../firebase/config";
-import { push, child, update } from "@firebase/database";
+// import { ref, database } from "../../../firebase/config";
+// import { push, child, update } from "@firebase/database";
+import { databaseCloudStore } from "../../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 import { mapGetters } from "vuex";
 export default {
   name: "CreateRoom",
@@ -48,19 +50,27 @@ export default {
 
     // MODULE: Create room
     createRoomChat() {
-      const newPostKey = push(child(ref(database), "rooms")).key;
-      const newRooms = {
-        id: newPostKey,
+      // const newPostKey = push(child(ref(database), "rooms")).key;
+      // const newRooms = {
+      //   id: newPostKey,
+      //   name: this.name,
+      //   description: this.description,
+      // };
+      // const updates = {};
+      // updates["rooms/" + newPostKey] = newRooms;
+
+      // this.$nextTick(() => {
+      //   this.$bvModal.hide("modal-create-room");
+      // });
+      // return update(ref(database), updates);
+      addDoc(collection(databaseCloudStore, "rooms"), {
         name: this.name,
         description: this.description,
-      };
-      const updates = {};
-      updates["rooms/" + newPostKey] = newRooms;
-
+        members: [this.currentUser.uid],
+      });
       this.$nextTick(() => {
         this.$bvModal.hide("modal-create-room");
       });
-      return update(ref(database), updates);
     },
   },
 };

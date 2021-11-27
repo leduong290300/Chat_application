@@ -82,7 +82,7 @@ import {
   updateProfile,
 } from "../../firebase/config";
 import { collection, addDoc } from "firebase/firestore";
-import { getAdditionalUserInfo } from "firebase/auth";
+
 // import md5 from "md5";
 export default {
   name: "FormRegister",
@@ -114,7 +114,6 @@ export default {
         )
           .then((UserCredentialImpl) => {
             const user = UserCredentialImpl.user;
-            console.log(getAdditionalUserInfo(user));
             updateProfile(user, {
               displayName: this.forms.username,
               photoURL:
