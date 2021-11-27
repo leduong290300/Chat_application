@@ -2,7 +2,14 @@
   <div id="wrapper">
     <b-row id="header">
       <b-col sm="6" xs="6" class="header-avatar">
-        <span class="name-meta">{{ this.currentChatRoom.name }}</span>
+        <div class="name">
+          <span class="name-meta">{{ this.currentChatRoom.name }}</span>
+        </div>
+        <div class="description">
+          <span class="description-meta">{{
+            this.currentChatRoom.description
+          }}</span>
+        </div>
       </b-col>
 
       <b-col sm="6" xs="6" class="header-option">
@@ -17,7 +24,17 @@
           icon="three-dots"
           v-b-tooltip.hover
           title="Lựa chọn"
+          v-b-toggle="'options'"
         ></b-icon>
+        <b-collapse id="options">
+          <b-card>
+            <span class="options-list"
+              >Thành viên
+              <b-badge variant="light">{{ countMembers }}</b-badge></span
+            >
+            <span class="options-list">Rời khỏi nhóm</span>
+          </b-card>
+        </b-collapse>
       </b-col>
     </b-row>
     <!-- Message -->
@@ -38,6 +55,9 @@ export default {
   components: { Message, Reply },
   computed: {
     ...mapGetters(["currentChatRoom"]),
+    countMembers() {
+      return this.currentChatRoom.members.length;
+    },
   },
   data() {
     return {
@@ -93,6 +113,14 @@ export default {
   white-space: nowrap;
   color: #000;
 }
+
+#header .description-meta {
+  font-weight: 500;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0 0 5px;
+}
 #header .header-option {
   display: flex;
   justify-content: flex-end;
@@ -107,7 +135,32 @@ export default {
 #header .more:hover {
   cursor: pointer;
 }
+#header .invite:focus,
+#header .more:focus {
+  outline: none;
+}
+#header .more {
+  position: relative;
+}
+#header .card {
+  position: absolute;
+  top: 80px;
+  right: 10px;
+}
+#header .card .options-list {
+  display: block;
+  padding: 10px 0;
+  width: 100%;
+}
+#header .card .options-list:hover {
+  cursor: pointer;
+}
 #header .invite {
   margin-right: 20px;
+}
+#header .badge {
+  background-color: #0d6efd;
+  position: absolute;
+  right: 5px;
 }
 </style>

@@ -23,15 +23,15 @@
   </b-row>
 </template>
 <script>
-import { ref, database } from "../../../firebase/config";
+import { databaseCloudStore, ref, database } from "../../../firebase/config";
 import { mapGetters } from "vuex";
-import { onChildAdded, onValue } from "@firebase/database";
+import { onValue } from "@firebase/database";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 export default {
   name: "Room",
   data() {
     return {
       rooms: [],
-      roomName: "",
       notificationCounts: [],
     };
   },
@@ -45,15 +45,28 @@ export default {
   },
 
   mounted() {
-    this.addListener();
+    this.loadRoomFromDatabase();
   },
 
   methods: {
-    addListener() {
-      let dataCurrent = ref(database, "rooms");
-      onChildAdded(dataCurrent, (snapshot) => {
-        this.rooms.push(snapshot.val());
-        this.countNotification(snapshot.key);
+    // MODULE Load rooms
+    loadRoomFromDatabase() {
+      // let dataCurrent = ref(database, "rooms");
+      // onChildAdded(dataCurrent, (snapshot) => {
+      //   this.rooms.push(snapshot.val());
+      //   this.countNotification(snapshot.key);
+      // });
+      const roomRef = query(
+        collection(databaseCloudStore, "rooms"),
+        where("members", "array-contains", this.currentUser.uid),
+      );
+      onSnapshot(roomRef, (snapshot) => {
+        snapshot.docs.map((doc) => {
+          this.rooms.push({
+            ...doc.data(),
+            id: doc.id,
+          });
+        });
       });
     },
 
