@@ -17,9 +17,13 @@
             </div>
 
             <div class="d-grid">
-              <b-button size="sm" class="btn-facebook btn-login">
-                <b-icon icon="facebook"></b-icon> Đăng nhập với
-                Facebook</b-button
+              <b-button
+                size="sm"
+                class="btn-facebook btn-login"
+                v-on:click="loginWithFacebook"
+              >
+                <b-icon icon="facebook"></b-icon>
+                Đăng nhập với Facebook</b-button
               >
             </div>
           </div>
@@ -30,15 +34,41 @@
 </template>
 
 <script>
-// import {
-//   authentication,
-//   FacebookAuthProvider,
-//   signInWithPopup,
-// } from "../../firebase/config";
-// const provider = new FacebookAuthProvider();
+// TODO Others
+import {
+  FacebookAuthProvider,
+  signInWithPopup,
+  getAdditionalUserInfo,
+} from "firebase/auth";
+import { authentication, databaseCloudStore } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 export default {
   name: "Form",
-  methods: {},
+  methods: {
+    // MODULE: Login facebook
+    loginWithFacebook() {
+      const providerFacebook = new FacebookAuthProvider();
+      signInWithPopup(authentication, providerFacebook)
+        .then((result) => {
+          const newUser = getAdditionalUserInfo(result);
+          const dataUser = result.user;
+          if (newUser.isNewUser) {
+            addDoc(collection(databaseCloudStore, "usersFB"), {
+              displayName: dataUser.displayName,
+              email: dataUser.email,
+              photoURL: dataUser.photoURL,
+              uid: dataUser.uid,
+              provider: newUser.providerId,
+            });
+          }
+          this.$store.dispatch("setUser", dataUser);
+          this.$router.push({ name: "Home" });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
 };
 </script>
 

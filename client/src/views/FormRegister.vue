@@ -78,12 +78,11 @@
 import {
   createUserWithEmailAndPassword,
   authentication,
-  database,
+  databaseCloudStore,
   updateProfile,
-  ref,
-  set,
 } from "../../firebase/config";
-
+import { collection, addDoc } from "firebase/firestore";
+import { getAdditionalUserInfo } from "firebase/auth";
 // import md5 from "md5";
 export default {
   name: "FormRegister",
@@ -107,7 +106,6 @@ export default {
   methods: {
     registerAccount() {
       this.errors = [];
-
       if (this.isFormValid()) {
         createUserWithEmailAndPassword(
           authentication,
@@ -116,6 +114,7 @@ export default {
         )
           .then((UserCredentialImpl) => {
             const user = UserCredentialImpl.user;
+            console.log(getAdditionalUserInfo(user));
             updateProfile(user, {
               displayName: this.forms.username,
               photoURL:
@@ -123,12 +122,12 @@ export default {
                 this.forms.username +
                 "?size=80",
             }).then(() => {
-              set(ref(database, "users/" + user.uid), {
+              addDoc(collection(databaseCloudStore, "usersEmail"), {
                 displayName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
+                uid: user.uid,
               });
-              this.$store.dispatch("setUser", user);
               this.$router.push("/login");
             });
           })

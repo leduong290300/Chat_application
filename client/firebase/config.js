@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
 import { getDatabase, ref, set } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -29,6 +30,8 @@ const database = getDatabase(app);
 const authentication = getAuth();
 // Lưu ảnh dám mây
 const storage = getStorage(app);
+// TODO Cloud Store
+const databaseCloudStore = getFirestore();
 getAnalytics(app);
 export {
   authentication,
@@ -40,4 +43,5 @@ export {
   set,
   signOut,
   storage,
+  databaseCloudStore,
 };
