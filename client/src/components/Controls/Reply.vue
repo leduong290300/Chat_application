@@ -43,7 +43,6 @@ import UploadFile from "../Modal/UploadFile.vue";
 // Others
 import { database, set, ref } from "../../../firebase/config";
 import { push, serverTimestamp } from "@firebase/database";
-
 import { VEmojiPicker } from "v-emoji-picker";
 import { mapGetters } from "vuex";
 export default {
@@ -81,21 +80,36 @@ export default {
       } else {
         value["image"] = url;
       }
+      if (this.isPrivate) {
+        value["userId"] = this.currentUser.uid;
+      } else {
+        value["roomId"] = this.currentChatRoom.id;
+      }
       return value;
     },
 
     // Gửi tin nhắn
     sendMessage() {
-      const postRef = this.getMessageRef();
+      const postRef = ref(database, `message/${this.currentChatRoom.id}`);
       const newPostRef = push(postRef);
-      set(newPostRef, this.createMessage());
+      if (this.message.length > 0) {
+        set(newPostRef, {
+          content: this.message,
+          time: serverTimestamp(),
+          user: {
+            displayName: this.currentUser.displayName,
+            photoURL: this.currentUser.photoURL,
+            id: this.currentUser.uid,
+          },
+        });
+      }
       this.isShow = false;
       this.message = "";
     },
 
     getMessageRef() {
       if (this.isPrivate) {
-        return ref(database, "privateMessage/" + this.currentChatUser.id);
+        return ref(database, `privateMessage/${this.currentChatUser.id}`);
       } else {
         return ref(database, `message/${this.currentChatRoom.id}`);
       }

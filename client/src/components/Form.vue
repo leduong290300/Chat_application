@@ -40,8 +40,8 @@ import {
   signInWithPopup,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import { authentication, databaseCloudStore } from "../../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { authentication, database, set, ref } from "../../firebase/config";
+
 export default {
   name: "Form",
   methods: {
@@ -53,12 +53,10 @@ export default {
           const newUser = getAdditionalUserInfo(result);
           const dataUser = result.user;
           if (newUser.isNewUser) {
-            addDoc(collection(databaseCloudStore, "usersFB"), {
+            set(ref(database, "usersFB/" + dataUser.uid), {
               displayName: dataUser.displayName,
               email: dataUser.email,
               photoURL: dataUser.photoURL,
-              uid: dataUser.uid,
-              provider: newUser.providerId,
             });
           }
           this.$store.dispatch("setUser", dataUser);

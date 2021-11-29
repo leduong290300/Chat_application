@@ -90,10 +90,10 @@ export default {
       const storageRef = ref(storage, filePath);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
-      // Tải file ảnh lên
+      //MODULE Tải file ảnh lên
       this.uploadTask = uploadBytes(storageRef, file, contentType);
 
-      // Quản lý tiến độ tải lên
+      //MODULE Quản lý tiến độ tải lên
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -117,7 +117,7 @@ export default {
       );
     },
 
-    //
+    //MODULE : Send message image
     sendMessageFile(url) {
       const messageRef = this.$parent.getMessageRef();
       const pathToUpload = push(messageRef);
