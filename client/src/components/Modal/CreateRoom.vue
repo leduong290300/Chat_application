@@ -19,10 +19,9 @@
 </template>
 <script>
 // TODO:Others
-// import { ref, database } from "../../../firebase/config";
-// import { push, child, update } from "@firebase/database";
-import { databaseCloudStore } from "../../../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { ref, database } from "../../../firebase/config";
+import { push, child, update } from "@firebase/database";
+
 import { mapGetters } from "vuex";
 export default {
   name: "CreateRoom",
@@ -50,27 +49,19 @@ export default {
 
     // MODULE: Create room
     createRoomChat() {
-      // const newPostKey = push(child(ref(database), "rooms")).key;
-      // const newRooms = {
-      //   id: newPostKey,
-      //   name: this.name,
-      //   description: this.description,
-      // };
-      // const updates = {};
-      // updates["rooms/" + newPostKey] = newRooms;
-
-      // this.$nextTick(() => {
-      //   this.$bvModal.hide("modal-create-room");
-      // });
-      // return update(ref(database), updates);
-      addDoc(collection(databaseCloudStore, "rooms"), {
+      const newPostKey = push(child(ref(database), "rooms")).key;
+      const newRooms = {
+        id: newPostKey,
         name: this.name,
         description: this.description,
         members: [this.currentUser.uid],
-      });
+      };
+      let updates = {};
+      updates["rooms/" + newPostKey] = newRooms;
       this.$nextTick(() => {
         this.$bvModal.hide("modal-create-room");
       });
+      return update(ref(database), updates);
     },
   },
 };

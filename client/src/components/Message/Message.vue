@@ -18,7 +18,7 @@
             {{ message.content }}
           </div>
           <b-img thumbnail fluid :src="message.image" v-else></b-img>
-          <div class="message-time">{{ message.time | timeNow() }}</div>
+          <div class="message-time">{{ message.time | timeNow }}</div>
         </div>
       </b-col>
     </b-row>
@@ -36,10 +36,9 @@ export default {
       return message.content == null && message.image != null;
     },
   },
-  // Xắp sếp thời gian tin nhắn
   filters: {
-    timeNow(value) {
-      return moment(value).fromNow();
+    timeNow: function (time) {
+      return moment(time).fromNow();
     },
   },
 };

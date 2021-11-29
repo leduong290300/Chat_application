@@ -21,8 +21,8 @@ import Message from "./../Message/Message.vue";
 import Reply from "./../Controls/Reply.vue";
 // Others
 import { mapGetters } from "vuex";
-import { database, ref } from "../../../firebase/config";
-import { onChildAdded, off } from "@firebase/database";
+import { databaseCloudStore } from "../../../firebase/config";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 export default {
   name: "ChatSingle",
   data() {
@@ -46,26 +46,18 @@ export default {
     },
   },
   methods: {
-    // Load message
+    //MODULE Load message
     loadMessage() {
-      const messageRef = ref(
-        database,
-        "privateMessage/" + this.currentChatUser.id,
+      const messageRef = query(
+        collection(databaseCloudStore, "messageUsers"),
+        where("userId", "==", this.currentChatUser.id),
       );
-
-      onChildAdded(messageRef, (snapshot) => {
-        const data = snapshot.val();
-        data["id"] = snapshot.key;
-        this.storeMessage.push(data);
+      onSnapshot(messageRef, (snapshot) => {
+        snapshot.forEach((value) => {
+          this.storeMessage.push(value.data());
+        });
       });
     },
-    // Unsubscribe
-    unsubscribe() {
-      off(ref(database, `privateMessage/${this.currentChatUser.id}`));
-    },
-  },
-  beforeDestroy() {
-    this.unsubscribe();
   },
 };
 </script>

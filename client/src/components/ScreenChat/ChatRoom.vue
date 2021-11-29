@@ -76,12 +76,11 @@ export default {
     },
   },
   methods: {
-    // Load tin nhắn
+    //MODULE Load message
     loadMessage() {
       const messageRef = ref(database, `message/${this.currentChatRoom.id}`);
       onChildAdded(messageRef, (snapshot) => {
         const data = snapshot.val();
-        data["id"] = snapshot.key;
         this.storeMessage.push(data);
       });
     },

@@ -78,12 +78,12 @@
 import {
   createUserWithEmailAndPassword,
   authentication,
-  databaseCloudStore,
+  database,
   updateProfile,
+  ref,
+  set,
 } from "../../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
 
-// import md5 from "md5";
 export default {
   name: "FormRegister",
   data() {
@@ -121,11 +121,10 @@ export default {
                 this.forms.username +
                 "?size=80",
             }).then(() => {
-              addDoc(collection(databaseCloudStore, "usersEmail"), {
+              set(ref(database, "usersEmail/" + user.uid), {
                 displayName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
-                uid: user.uid,
               });
               this.$router.push("/login");
             });
