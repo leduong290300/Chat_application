@@ -53,7 +53,13 @@ export default {
     loadRoomFromDatabase() {
       let dataCurrent = ref(database, "rooms");
       onChildAdded(dataCurrent, (snapshot) => {
-        this.rooms.push(snapshot.val());
+        let isMembers = snapshot.val();
+        let value = isMembers.members.find(
+          (data) => data === this.currentUser.uid,
+        );
+        if (value) {
+          this.rooms.push(snapshot.val());
+        }
         this.countNotification(snapshot.key);
       });
     },

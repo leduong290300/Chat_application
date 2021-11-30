@@ -18,6 +18,7 @@
           v-b-tooltip.hover
           title="Thêm thành viên"
           class="invite"
+          v-b-modal.invite-members
         ></b-icon>
         <b-icon
           class="more"
@@ -36,6 +37,7 @@
           </b-card>
         </b-collapse>
       </b-col>
+      <InviteMembers />
     </b-row>
     <!-- Message -->
     <Message v-bind:storeMessage="storeMessage" />
@@ -44,15 +46,17 @@
   </div>
 </template>
 <script>
+// TODO Componenets
 import Message from "./../Message/Message.vue";
 import Reply from "./../Controls/Reply.vue";
-// Other
+import InviteMembers from "../Modal/InviteMembers.vue";
+// TODO Others
 import { mapGetters } from "vuex";
 import { database, ref } from "../../../firebase/config";
 import { onChildAdded } from "@firebase/database";
 export default {
   name: "ChatRoom",
-  components: { Message, Reply },
+  components: { Message, Reply, InviteMembers },
   computed: {
     ...mapGetters(["currentChatRoom"]),
     countMembers() {
