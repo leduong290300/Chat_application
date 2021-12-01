@@ -10,15 +10,7 @@
     </b-col>
     <b-col sm="6" xs="6" class="header-button">
       <b-row class="header-option">
-        <b-col sm="2" xs="2">
-          <b-icon
-            class="add-contact"
-            icon="person-plus"
-            v-b-tooltip.hover
-            title="Thêm liên hệ"
-          ></b-icon>
-        </b-col>
-        <b-col sm="2" xs="2">
+        <b-col sm="3" xs="3">
           <b-icon
             class="add-group"
             icon="bookmark-plus"
@@ -28,7 +20,7 @@
           ></b-icon>
           <CreateRoom />
         </b-col>
-        <b-col sm="2" xs="2">
+        <b-col sm="3" xs="3">
           <b-icon
             class="btn-logout"
             icon="power"
@@ -44,6 +36,7 @@
 <script>
 // TODO:Import componenet
 import CreateRoom from "../Modal/CreateRoom.vue";
+
 import { signOut, authentication } from "../../../firebase/config";
 import { mapGetters } from "vuex";
 export default {
@@ -107,7 +100,8 @@ export default {
 #header .header-button .btn-logout:hover {
   cursor: pointer;
 }
-#header .header-button .add-group:focus {
+#header .header-button .add-group:focus,
+#header .header-button .add-contact:focus {
   outline: none;
 }
 </style>

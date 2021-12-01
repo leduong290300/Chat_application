@@ -21,8 +21,8 @@ import Message from "./../Message/Message.vue";
 import Reply from "./../Controls/Reply.vue";
 // Others
 import { mapGetters } from "vuex";
-import { databaseCloudStore } from "../../../firebase/config";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { ref, database } from "../../../firebase/config";
+import { onChildAdded } from "firebase/database";
 export default {
   name: "ChatSingle",
   data() {
@@ -35,9 +35,6 @@ export default {
   computed: {
     ...mapGetters(["currentChatUser", "isPrivate", "currentChatRoom"]),
   },
-  mounted() {
-    this.loadMessage();
-  },
   watch: {
     currentChatUser() {
       this.storeMessage = [];
@@ -45,17 +42,20 @@ export default {
       this.user = this.currentChatUser;
     },
   },
+  mounted() {
+    this.loadMessage();
+  },
   methods: {
     //MODULE Load message
     loadMessage() {
-      const messageRef = query(
-        collection(databaseCloudStore, "messageUsers"),
-        where("userId", "==", this.currentChatUser.id),
+      const messageRef = ref(
+        database,
+        `privateMessage/${this.currentChatUser.id}`,
       );
-      onSnapshot(messageRef, (snapshot) => {
-        snapshot.forEach((value) => {
-          this.storeMessage.push(value.data());
-        });
+      onChildAdded(messageRef, (snapshot) => {
+        const data = snapshot.val();
+        data["id"] = snapshot.key;
+        this.storeMessage.push(data);
       });
     },
   },

@@ -90,7 +90,7 @@ export default {
 
     // Gửi tin nhắn
     sendMessage() {
-      const postRef = ref(database, `message/${this.currentChatRoom.id}`);
+      const postRef = this.getMessageRef();
       const newPostRef = push(postRef);
       if (this.message.length > 0) {
         set(newPostRef, {
