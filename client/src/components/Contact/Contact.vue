@@ -49,7 +49,7 @@ export default {
   methods: {
     // Load user
     addListener() {
-      let dataCurrent = ref(database, "users");
+      let dataCurrent = ref(database, "usersEmail");
       onChildAdded(dataCurrent, (snapshot) => {
         if (this.currentUser.uid !== snapshot.key) {
           let data = snapshot.val();

@@ -65,6 +65,7 @@ export default {
 }
 #message .message-body {
   margin-bottom: 15px !important;
+  margin-top: 15px !important;
 }
 #message .message {
   max-width: 60%;
