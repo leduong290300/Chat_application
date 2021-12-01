@@ -13,7 +13,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
+firebase.json
+.firebaserc
+.firebase
+public
 # Editor directories and files
 
 .idea
